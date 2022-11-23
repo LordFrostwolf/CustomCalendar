@@ -126,7 +126,7 @@ public class customCalendarEvent{
      */
     public void setDate(LocalDate date){
         this.date = date;
-        day = date.getDayOfWeek()
+        day = date.getDayOfWeek();
     }
 
     /**
