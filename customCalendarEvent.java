@@ -3,7 +3,7 @@ import java.time.*;
 /**
  * An object to store a customizable calendar event.
  */
-public class customCalendarEvent{
+public class CustomCalendarEvent{
     private String name;
     private LocalTime time;
     private LocalDate date;
@@ -16,7 +16,7 @@ public class customCalendarEvent{
      * @param time the time of the event
      * @param date the date of the event
      */
-    public customCalendarEvent(String name, LocalTime time, LocalDate date){
+    public CustomCalendarEvent(String name, LocalTime time, LocalDate date){
         this.name = name;
         this.time = time;
         this.date = date;
@@ -29,7 +29,7 @@ public class customCalendarEvent{
      * @param time the time of the event
      * @param day the day of week of the event
      */
-    public customCalendarEvent(String name, LocalTime time, DayOfWeek day){
+    public CustomCalendarEvent(String name, LocalTime time, DayOfWeek day){
         this.name = name;
         this.time = time;
         this.day = day;
@@ -41,7 +41,7 @@ public class customCalendarEvent{
      * @param name the name of the event
      * @param day the day of the week of the event
      */
-    public customCalendarEvent(String name, DayOfWeek day){
+    public CustomCalendarEvent(String name, DayOfWeek day){
         this.name = name;
         this.day = day;
     }
@@ -52,7 +52,7 @@ public class customCalendarEvent{
      * @param name the name of the event
      * @param date the day of the week of the event
      */
-    public customCalendarEvent(String name, LocalDate date){
+    public CustomCalendarEvent(String name, LocalDate date){
         this.name = name;
         this.date = date;
         this.day = date.getDayOfWeek();
@@ -86,8 +86,8 @@ public class customCalendarEvent{
     public LocalDate getDate(){
         if(date == null){
             LocalDate tmp = LocalDate.now();
-            while(date.getDayOfWeek() != day){
-                tmp = date.plusDays(1);
+            while(tmp.getDayOfWeek() != day){
+                tmp = tmp.plusDays(1);
             }
             return tmp;
         }
