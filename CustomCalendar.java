@@ -162,4 +162,34 @@ public class CustomCalendar{
         }
         return event;
     }
+
+    public void howLongUntilNextEvent(){
+        LocalTime curTime = LocalTime.now();
+        LocalDate curDate = LocalDate.now();
+        CustomCalendarEvent nextEvent = getNextEvent();
+
+        int yearDiff = nextEvent.getDate().getYear() - curDate.getYear();
+        int monthDiff = nextEvent.getDate().getMonthValue() - curDate.getMonthValue();
+        int dayDiff = nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth();
+        int hourDiff = nextEvent.getTime().getHour() - curTime.getHour();
+        int minuteDiff = nextEvent.getTime().getMinute() - curTime.getMinute();
+        int secondsDiff = nextEvent.getTime().getSecond() - curTime.getSecond();
+
+        System.out.println(dayDiff);
+
+        String output = new String("Bis zum nächsten Event mit dem Namen \"" + nextEvent.getName() + 
+            "\" am " + nextEvent.getDate() + 
+            " um " + nextEvent.getTime().getHour() + ":" + 
+            (nextEvent.getTime().getMinute() > 10 ? nextEvent.getTime().getMinute() : "0" + nextEvent.getTime().getMinute()) 
+            + " sind es noch:");
+
+        String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
+        String output2 = monthDiff != 0 ? output1.concat("\n" + monthDiff + " Monate") : output1;
+        String output3 = dayDiff != 0 ? output2.concat("\n" + dayDiff + " Tage") : output2;
+        String output4 = hourDiff != 0 ? output3.concat("\n" + hourDiff + " Stunden") : output3;
+        String output5 = minuteDiff != 0 ? output4.concat("\n" + minuteDiff + " Minuten") : output4;
+        String output6 = secondsDiff != 0 ? output5.concat("\n" + secondsDiff + " Sekunden") : output5;
+
+        System.out.println(output6);
+    }
 }
