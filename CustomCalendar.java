@@ -170,6 +170,9 @@ public class CustomCalendar{
         return false;
     }
 
+    /**
+     * Prints the remaining time until the next event based on the system clock.
+     */
     public void howLongUntilNextEvent(){
         LocalTime curTime = LocalTime.now();
         LocalDate curDate = LocalDate.now();
