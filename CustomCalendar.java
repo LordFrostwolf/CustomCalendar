@@ -221,6 +221,9 @@ public class CustomCalendar{
         return new int[]{yearDiff,monthDiff,dayDiff,hourDiff,minuteDiff,secondsDiff};
     }
 
+    /**
+     * Prints the remaining time until the next event based on the system clock.
+     */
     public void howLongUntilNextEvent(){
         LocalTime curTime = LocalTime.now();
         LocalDate curDate = LocalDate.now();
