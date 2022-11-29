@@ -170,44 +170,36 @@ public class CustomCalendar{
         return false;
     }
 
-    /**
-     * Prints the remaining time until the next event based on the system clock.
-     */
-    public void howLongUntilNextEvent(){
-        LocalTime curTime = LocalTime.now();
-        LocalDate curDate = LocalDate.now();
-        CustomCalendarEvent nextEvent = getNextEvent();
-        System.out.println(nextEvent.getName() + " " + nextEvent.getDate());
-
-        int yearDiff = nextEvent.getDate().getYear() - curDate.getYear();
-        int monthDiff = (nextEvent.getDate().getMonthValue() - curDate.getMonthValue()) % 12;
+    private int[] calculateDifference(LocalDate date, LocalTime time, LocalDate curDate, LocalTime curTime){
+        int yearDiff = date.getYear() - curDate.getYear();
+        int monthDiff = (date.getMonthValue() - curDate.getMonthValue()) % 12;
         int dayDiff;
-        switch(nextEvent.getDate().getMonthValue()){
+        switch(date.getMonthValue()){
             case 1,3,5,7,8,10,12: 
-                dayDiff = (nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 31;
+                dayDiff = (date.getDayOfMonth() - curDate.getDayOfMonth()) % 31;
                 break;
             case 2:
-                if(isYearLeapYear(nextEvent.getDate().getYear())){
-                    dayDiff = (nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 29;
+                if(isYearLeapYear(date.getYear())){
+                    dayDiff = (date.getDayOfMonth() - curDate.getDayOfMonth()) % 29;
                 }
                 else{
-                    dayDiff = (nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 28;
+                    dayDiff = (date.getDayOfMonth() - curDate.getDayOfMonth()) % 28;
                 }
                 break;
             default:
-                dayDiff =(nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 30;
+                dayDiff =(date.getDayOfMonth() - curDate.getDayOfMonth()) % 30;
         }
-        int hourDiff = (nextEvent.getTime().getHour() - curTime.getHour()) % 24;
-        int minuteDiff = (nextEvent.getTime().getMinute() - curTime.getMinute()) % 60;
-        int secondsDiff = (nextEvent.getTime().getSecond() - curTime.getSecond()) % 60;
+        int hourDiff = (time.getHour() - curTime.getHour()) % 24;
+        int minuteDiff = (time.getMinute() - curTime.getMinute()) % 60;
+        int secondsDiff = (time.getSecond() - curTime.getSecond()) % 60;
         if(monthDiff < 0){monthDiff+=12;}
         if(dayDiff < 0){
-            switch(nextEvent.getDate().getMonthValue()){
+            switch(date.getMonthValue()){
                 case 1,3,4,7,8,10,12:
                     dayDiff += 31;
                     break;
                 case 2:
-                    if(isYearLeapYear(nextEvent.getDate().getYear())){dayDiff += 29;}
+                    if(isYearLeapYear(date.getYear())){dayDiff += 29;}
                     else{dayDiff += 28;}
                     break;
                 default:
@@ -226,11 +218,82 @@ public class CustomCalendar{
             secondsDiff+=60;
             minuteDiff -= 1;
         }
+        return new int[]{yearDiff,monthDiff,dayDiff,hourDiff,minuteDiff,secondsDiff};
+    }
+
+    /**
+     * Prints the remaining time until the next event based on the system clock.
+     */
+    public void howLongUntilNextEvent(){
+        LocalTime curTime = LocalTime.now();
+        LocalDate curDate = LocalDate.now();
+        CustomCalendarEvent nextEvent = getNextEvent();
+
+        int[] diffArray = calculateDifference(nextEvent.getDate(), nextEvent.getTime(), curDate, curTime);
+        int yearDiff = diffArray[0];
+        int monthDiff = diffArray[1];
+        int dayDiff = diffArray[2];
+        int hourDiff = diffArray[3];
+        int minuteDiff = diffArray[4];
+        int secondsDiff = diffArray[5];
 
         String output = new String("Bis zum nächsten Event mit dem Namen \"" + nextEvent.getName() + 
             "\" am " + nextEvent.getDate() + 
             " um " + nextEvent.getTime().getHour() + ":" + 
             (nextEvent.getTime().getMinute() > 10 ? nextEvent.getTime().getMinute() : "0" + nextEvent.getTime().getMinute()) 
+            + " sind es noch:");
+
+        String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
+        String output2 = monthDiff != 0 ? output1.concat("\n" + monthDiff + " Monate") : output1;
+        String output3 = dayDiff != 0 ? output2.concat("\n" + dayDiff + " Tage") : output2;
+        String output4 = hourDiff != 0 ? output3.concat("\n" + hourDiff + " Stunden") : output3;
+        String output5 = minuteDiff != 0 ? output4.concat("\n" + minuteDiff + " Minuten") : output4;
+        String output6 = secondsDiff != 0 ? output5.concat("\n" + secondsDiff + " Sekunden") : output5;
+
+        System.out.println(output6);
+    }
+
+    /**
+     * Returns the next ending CustomCalendarEvent according to the system clock.
+     * <br> If there is no next ending CustomCalendarEvent, returns null.
+     * @return the next ending CustomCalendarEvent according to the system clock
+     */
+    public CustomCalendarEvent getNextEndingEvent(){
+        CustomCalendarEvent event = null;
+        LocalTime curTime = LocalTime.now();
+        LocalDate curDate = LocalDate.now();
+        for (int i = 0; i < events.size(); i++){
+            if(events.get(i).getDate().equals(curDate) && events.get(i).getTime().isBefore(curTime) && events.get(i).getEndTime().isAfter(curTime)){ 
+                if(event == null || (events.get(i).getEndTime().isBefore(event.getEndTime()))){
+                    event = events.get(i);
+                }
+            }
+        }
+        return event;
+    }
+
+    /**
+     * Prints the remaining time until the end of the current event based on the system clock.
+     * <br> If there are two or more current events, prints the remaining time until the event that ends the earliest ends.
+     * <br> Full day events do not have an endtime, which is why they are not registered by this method.
+     */
+    public void howLongUntilEndOfEvent(){
+        LocalTime curTime = LocalTime.now();
+        LocalDate curDate = LocalDate.now();
+        CustomCalendarEvent nextEndingEvent = getNextEndingEvent();
+        
+        int[] diffArray = calculateDifference(nextEndingEvent.getDate(), nextEndingEvent.getEndTime(), curDate, curTime);
+        int yearDiff = diffArray[0];
+        int monthDiff = diffArray[1];
+        int dayDiff = diffArray[2];
+        int hourDiff = diffArray[3];
+        int minuteDiff = diffArray[4];
+        int secondsDiff = diffArray[5];
+
+        String output = new String("Bis zum Ende des Event mit dem Namen \"" + nextEndingEvent.getName() + 
+            "\" am " + nextEndingEvent.getDate() + 
+            " bis " + nextEndingEvent.getEndTime().getHour() + ":" + 
+            (nextEndingEvent.getEndTime().getMinute() > 10 ? nextEndingEvent.getEndTime().getMinute() : "0" + nextEndingEvent.getEndTime().getMinute()) 
             + " sind es noch:");
 
         String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
