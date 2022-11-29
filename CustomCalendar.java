@@ -162,4 +162,81 @@ public class CustomCalendar{
         }
         return event;
     }
+
+    private boolean isYearLeapYear(int year){
+        if(year % 4 == 0 && (!(year % 100 == 0) || year % 400 == 0)){
+            return true;
+        }
+        return false;
+    }
+
+    public void howLongUntilNextEvent(){
+        LocalTime curTime = LocalTime.now();
+        LocalDate curDate = LocalDate.now();
+        CustomCalendarEvent nextEvent = getNextEvent();
+        System.out.println(nextEvent.getName() + " " + nextEvent.getDate());
+
+        int yearDiff = nextEvent.getDate().getYear() - curDate.getYear();
+        int monthDiff = (nextEvent.getDate().getMonthValue() - curDate.getMonthValue()) % 12;
+        int dayDiff;
+        switch(nextEvent.getDate().getMonthValue()){
+            case 1,3,5,7,8,10,12: 
+                dayDiff = (nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 31;
+                break;
+            case 2:
+                if(isYearLeapYear(nextEvent.getDate().getYear())){
+                    dayDiff = (nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 29;
+                }
+                else{
+                    dayDiff = (nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 28;
+                }
+                break;
+            default:
+                dayDiff =(nextEvent.getDate().getDayOfMonth() - curDate.getDayOfMonth()) % 30;
+        }
+        int hourDiff = (nextEvent.getTime().getHour() - curTime.getHour()) % 24;
+        int minuteDiff = (nextEvent.getTime().getMinute() - curTime.getMinute()) % 60;
+        int secondsDiff = (nextEvent.getTime().getSecond() - curTime.getSecond()) % 60;
+        if(monthDiff < 0){monthDiff+=12;}
+        if(dayDiff < 0){
+            switch(nextEvent.getDate().getMonthValue()){
+                case 1,3,4,7,8,10,12:
+                    dayDiff += 31;
+                    break;
+                case 2:
+                    if(isYearLeapYear(nextEvent.getDate().getYear())){dayDiff += 29;}
+                    else{dayDiff += 28;}
+                    break;
+                default:
+                    dayDiff += 30;
+            }
+        }
+        if(hourDiff < 0){
+            hourDiff+=24;
+            dayDiff -= 1;
+        }
+        if(minuteDiff < 0){
+            minuteDiff+=60;
+            hourDiff -= 1;
+        }
+        if(secondsDiff < 0){
+            secondsDiff+=60;
+            minuteDiff -= 1;
+        }
+
+        String output = new String("Bis zum nächsten Event mit dem Namen \"" + nextEvent.getName() + 
+            "\" am " + nextEvent.getDate() + 
+            " um " + nextEvent.getTime().getHour() + ":" + 
+            (nextEvent.getTime().getMinute() > 10 ? nextEvent.getTime().getMinute() : "0" + nextEvent.getTime().getMinute()) 
+            + " sind es noch:");
+
+        String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
+        String output2 = monthDiff != 0 ? output1.concat("\n" + monthDiff + " Monate") : output1;
+        String output3 = dayDiff != 0 ? output2.concat("\n" + dayDiff + " Tage") : output2;
+        String output4 = hourDiff != 0 ? output3.concat("\n" + hourDiff + " Stunden") : output3;
+        String output5 = minuteDiff != 0 ? output4.concat("\n" + minuteDiff + " Minuten") : output4;
+        String output6 = secondsDiff != 0 ? output5.concat("\n" + secondsDiff + " Sekunden") : output5;
+
+        System.out.println(output6);
+    }
 }
