@@ -250,6 +250,11 @@ public class CustomCalendar{
         System.out.println(output6);
     }
 
+    /**
+     * Returns the next ending CustomCalendarEvent according to the system clock.
+     * <br> If there is no next ending CustomCalendarEvent, returns null.
+     * @return the next ending CustomCalendarEvent according to the system clock
+     */
     public CustomCalendarEvent getNextEndingEvent(){
         CustomCalendarEvent event = null;
         LocalTime curTime = LocalTime.now();
@@ -264,6 +269,11 @@ public class CustomCalendar{
         return event;
     }
 
+    /**
+     * Prints the remaining time until the end of the current event based on the system clock.
+     * <br> If there are two or more current events, prints the remaining time until the event that ends the earliest ends.
+     * <br> Full day events do not have an endtime, which is why they are not registered by this method.
+     */
     public void howLongUntilEndOfEvent(){
         LocalTime curTime = LocalTime.now();
         LocalDate curDate = LocalDate.now();
