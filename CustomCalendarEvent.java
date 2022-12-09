@@ -9,6 +9,9 @@ public class CustomCalendarEvent{
     private LocalDate date;
     private DayOfWeek day;
     private LocalTime endTime;
+    private int weekInterval;
+    private int yearInterval;
+    private LocalDate startingDate;
     
     private void parseLocalTime(String time){
         try {
@@ -37,6 +40,15 @@ public class CustomCalendarEvent{
         }
     }
 
+    private void parseStartingDate(String date){
+        try {
+            this.startingDate = LocalDate.parse(date);
+        } catch (Exception e) {
+            System.out.println("Error while parsing date.");
+            this.startingDate = LocalDate.now();
+        }
+    }
+
     /**
      * Creates a new calendar event with the given name, time, endtime and date.
      * <br> It also automatically stores the day of the week according to the date.
@@ -55,29 +67,56 @@ public class CustomCalendarEvent{
     }
 
     /**
-     * Creates a new recurring calendar event with the given name, time, endtime and day of the week.
+     * Creates a new calendar event with the given name, time, endtime, date and interval.
+     * <br> It also automatically stores the day of the week according to the date.
+     * <br> If parsing the time or date creates an exception, sets these values to the current values of the system clock.
+     * @param name the name of the event
+     * @param time the time of the event
+     * @param endTime the endtime of the event
+     * @param date the date of the event
+     * @param yearInterval the interval of the event
+     */
+    public CustomCalendarEvent(String name, String time, String endTime, String date, int yearInterval){
+        this.name = name;
+        parseLocalTime(time);
+        parseLocalEndTime(endTime);
+        parseLocalDate(date);
+        this.day = this.date.getDayOfWeek();
+        this.yearInterval = yearInterval;
+    }
+
+    /**
+     * Creates a new recurring calendar event with the given name, time, endtime, day of the week, starting date and interval.
      * <br> If parsing the time creates an exception, sets this value to the current value of the system clock.
      * @param name the name of the event
      * @param time the time of the event
      * @param endTime the endtime of the event
      * @param day the day of week of the event
+     * @param startingDate the starting date of the event
+     * @param weekInterval the interval of the event
      */
-    public CustomCalendarEvent(String name, String time, String endTime, DayOfWeek day){
+    public CustomCalendarEvent(String name, String time, String endTime, DayOfWeek day, String startingDate, int weekInterval){
         this.name = name;
         parseLocalTime(time);
         parseLocalEndTime(endTime);
         this.day = day;
+        parseStartingDate(startingDate);
+        this.weekInterval = weekInterval;
     }
 
     /**
-     * Creates a new recurring calendar event with the given name day of week.
+     * Creates a new recurring calendar event with the given name, day of week, starting date and interval.
      * <br> This event is interpreted as a whole day event.
      * @param name the name of the event
      * @param day the day of the week of the event
+     * @param startingDate the starting date of the event
+     * @param weekInterval the interval of the event
      */
-    public CustomCalendarEvent(String name, DayOfWeek day){
+    public CustomCalendarEvent(String name, DayOfWeek day, String startingDate, int weekInterval){
         this.name = name;
         this.day = day;
+        parseStartingDate(startingDate);
+        this.weekInterval = weekInterval;
     }
 
     /**
@@ -91,6 +130,20 @@ public class CustomCalendarEvent{
         this.name = name;
         parseLocalDate(date);;
         this.day = this.date.getDayOfWeek();
+    }
+
+    /**
+     * Creates a new calendar event with the given name and date.
+     * <br> This event is interpreted as a whole day event.
+     * <br> If parsing the date creates an exception, sets this value to the current value of the system clock.
+     * @param name the name of the event
+     * @param date the day of the week of the event
+     */
+    public CustomCalendarEvent(String name, String date, int yearInterval){
+        this.name = name;
+        parseLocalDate(date);;
+        this.day = this.date.getDayOfWeek();
+        this.yearInterval = yearInterval;
     }
 
     /**
@@ -132,10 +185,15 @@ public class CustomCalendarEvent{
      */
     public LocalDate getDate(){
         if(date == null){
-            LocalDate tmp = LocalDate.now();
-            while(tmp.getDayOfWeek() != day){
-                tmp = tmp.plusDays(1);
+            LocalDate tmp = startingDate;
+            while(tmp.isBefore(LocalDate.now())){
+                tmp = tmp.plusWeeks(weekInterval);
             }
+            return tmp;
+        }
+        if(date.isBefore(LocalDate.now()) && yearInterval != 0){
+            LocalDate tmp = date;
+            while(tmp.isBefore(LocalDate.now())){tmp = tmp.plusYears(yearInterval);}
             return tmp;
         }
         return date;
@@ -147,6 +205,15 @@ public class CustomCalendarEvent{
      */
     public DayOfWeek getDay(){
         return day;
+    }
+
+    /**
+     * Returns the interval of the event.
+     * <br> If the event is not recurring, returns 0.
+     * @return the interval of the event.
+     */
+    public int getInterval(){
+        return yearInterval == 0 ? weekInterval : yearInterval;
     }
 
     /**
@@ -201,5 +268,19 @@ public class CustomCalendarEvent{
     public void setDay(DayOfWeek day){
         this.day = day;
         date = null;
+    }
+
+    /**
+     * Sets the interval of the event.
+     * <br> If the event is a weekly recurring event and {@code interval} is 0, does not change the interval.
+     * @param interval the interval of the event
+     */
+    public void setInterval(int interval){
+        if(yearInterval != 0){
+            yearInterval = interval;
+        }
+        else{
+            weekInterval = interval == 0 ? weekInterval : interval;
+        }
     }
 }
