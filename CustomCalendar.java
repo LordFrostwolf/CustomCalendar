@@ -225,32 +225,36 @@ public class CustomCalendar{
      * Prints the remaining time until the next event based on the system clock.
      */
     public void howLongUntilNextEvent(){
-        LocalTime curTime = LocalTime.now();
-        LocalDate curDate = LocalDate.now();
-        CustomCalendarEvent nextEvent = getNextEvent();
+        try{
+            LocalTime curTime = LocalTime.now();
+            LocalDate curDate = LocalDate.now();
+            CustomCalendarEvent nextEvent = getNextEvent();
 
-        int[] diffArray = calculateDifference(nextEvent.getDate(), nextEvent.getTime(), curDate, curTime);
-        int yearDiff = diffArray[0];
-        int monthDiff = diffArray[1];
-        int dayDiff = diffArray[2];
-        int hourDiff = diffArray[3];
-        int minuteDiff = diffArray[4];
-        int secondsDiff = diffArray[5];
+            int[] diffArray = calculateDifference(nextEvent.getDate(), nextEvent.getTime(), curDate, curTime);
+            int yearDiff = diffArray[0];
+            int monthDiff = diffArray[1];
+            int dayDiff = diffArray[2];
+            int hourDiff = diffArray[3];
+            int minuteDiff = diffArray[4];
+            int secondsDiff = diffArray[5];
 
-        String output = new String("Bis zum nächsten Event mit dem Namen \"" + nextEvent.getName() + 
-            "\" am " + nextEvent.getDate() + 
-            " um " + nextEvent.getTime().getHour() + ":" + 
-            (nextEvent.getTime().getMinute() > 10 ? nextEvent.getTime().getMinute() : "0" + nextEvent.getTime().getMinute()) 
-            + " sind es noch:");
+            String output = new String("Bis zum nächsten Event mit dem Namen \"" + nextEvent.getName() + 
+                "\" am " + nextEvent.getDate() + 
+                " um " + nextEvent.getTime().getHour() + ":" + 
+                (nextEvent.getTime().getMinute() > 10 ? nextEvent.getTime().getMinute() : "0" + nextEvent.getTime().getMinute()) 
+                + " sind es noch:");
 
-        String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
-        String output2 = monthDiff != 0 ? output1.concat("\n" + monthDiff + " Monate") : output1;
-        String output3 = dayDiff != 0 ? output2.concat("\n" + dayDiff + " Tage") : output2;
-        String output4 = hourDiff != 0 ? output3.concat("\n" + hourDiff + " Stunden") : output3;
-        String output5 = minuteDiff != 0 ? output4.concat("\n" + minuteDiff + " Minuten") : output4;
-        String output6 = secondsDiff != 0 ? output5.concat("\n" + secondsDiff + " Sekunden") : output5;
+            String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
+            String output2 = monthDiff != 0 ? output1.concat("\n" + monthDiff + " Monate") : output1;
+            String output3 = dayDiff != 0 ? output2.concat("\n" + dayDiff + " Tage") : output2;
+            String output4 = hourDiff != 0 ? output3.concat("\n" + hourDiff + " Stunden") : output3;
+            String output5 = minuteDiff != 0 ? output4.concat("\n" + minuteDiff + " Minuten") : output4;
+            String output6 = secondsDiff != 0 ? output5.concat("\n" + secondsDiff + " Sekunden") : output5;
 
-        System.out.println(output6);
+            System.out.println(output6);
+        } catch(NullPointerException e){
+            System.out.println("There is no next event.");
+        }
     }
 
     /**
@@ -278,31 +282,35 @@ public class CustomCalendar{
      * <br> Full day events do not have an endtime, which is why they are not registered by this method.
      */
     public void howLongUntilEndOfEvent(){
-        LocalTime curTime = LocalTime.now();
-        LocalDate curDate = LocalDate.now();
-        CustomCalendarEvent nextEndingEvent = getNextEndingEvent();
+        try{
+            LocalTime curTime = LocalTime.now();
+            LocalDate curDate = LocalDate.now();
+            CustomCalendarEvent nextEndingEvent = getNextEndingEvent();
         
-        int[] diffArray = calculateDifference(nextEndingEvent.getDate(), nextEndingEvent.getEndTime(), curDate, curTime);
-        int yearDiff = diffArray[0];
-        int monthDiff = diffArray[1];
-        int dayDiff = diffArray[2];
-        int hourDiff = diffArray[3];
-        int minuteDiff = diffArray[4];
-        int secondsDiff = diffArray[5];
+            int[] diffArray = calculateDifference(nextEndingEvent.getDate(), nextEndingEvent.getEndTime(), curDate, curTime);
+            int yearDiff = diffArray[0];
+            int monthDiff = diffArray[1];
+            int dayDiff = diffArray[2];
+            int hourDiff = diffArray[3];
+            int minuteDiff = diffArray[4];
+            int secondsDiff = diffArray[5];
 
-        String output = new String("Bis zum Ende des Event mit dem Namen \"" + nextEndingEvent.getName() + 
-            "\" am " + nextEndingEvent.getDate() + 
-            " bis " + nextEndingEvent.getEndTime().getHour() + ":" + 
-            (nextEndingEvent.getEndTime().getMinute() > 10 ? nextEndingEvent.getEndTime().getMinute() : "0" + nextEndingEvent.getEndTime().getMinute()) 
-            + " sind es noch:");
+            String output = new String("Bis zum Ende des Event mit dem Namen \"" + nextEndingEvent.getName() + 
+                "\" am " + nextEndingEvent.getDate() + 
+                " bis " + nextEndingEvent.getEndTime().getHour() + ":" + 
+                (nextEndingEvent.getEndTime().getMinute() > 10 ? nextEndingEvent.getEndTime().getMinute() : "0" + nextEndingEvent.getEndTime().getMinute()) 
+                + " sind es noch:");
 
-        String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
-        String output2 = monthDiff != 0 ? output1.concat("\n" + monthDiff + " Monate") : output1;
-        String output3 = dayDiff != 0 ? output2.concat("\n" + dayDiff + " Tage") : output2;
-        String output4 = hourDiff != 0 ? output3.concat("\n" + hourDiff + " Stunden") : output3;
-        String output5 = minuteDiff != 0 ? output4.concat("\n" + minuteDiff + " Minuten") : output4;
-        String output6 = secondsDiff != 0 ? output5.concat("\n" + secondsDiff + " Sekunden") : output5;
+            String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
+            String output2 = monthDiff != 0 ? output1.concat("\n" + monthDiff + " Monate") : output1;
+            String output3 = dayDiff != 0 ? output2.concat("\n" + dayDiff + " Tage") : output2;
+            String output4 = hourDiff != 0 ? output3.concat("\n" + hourDiff + " Stunden") : output3;
+            String output5 = minuteDiff != 0 ? output4.concat("\n" + minuteDiff + " Minuten") : output4;
+            String output6 = secondsDiff != 0 ? output5.concat("\n" + secondsDiff + " Sekunden") : output5;
 
-        System.out.println(output6);
+            System.out.println(output6);
+        } catch(NullPointerException e){
+            System.out.println("There is no current event.");
+        }
     }
 }
