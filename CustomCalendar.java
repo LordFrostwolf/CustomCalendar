@@ -298,7 +298,7 @@ public class CustomCalendar{
             String output = new String("Bis zum Ende des Event mit dem Namen \"" + nextEndingEvent.getName() + 
                 "\" am " + nextEndingEvent.getDate() + 
                 " bis " + nextEndingEvent.getEndTime().getHour() + ":" + 
-                (nextEndingEvent.getEndTime().getMinute() > 10 ? nextEndingEvent.getEndTime().getMinute() : "0" + nextEndingEvent.getEndTime().getMinute()) 
+                (nextEndingEvent.getEndTime().getMinute() >= 10 ? nextEndingEvent.getEndTime().getMinute() : "0" + nextEndingEvent.getEndTime().getMinute()) 
                 + " sind es noch:");
 
             String output1 = yearDiff != 0 ? output.concat("\n" + yearDiff + " Jahre") : output;
